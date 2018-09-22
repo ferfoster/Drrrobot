@@ -6,6 +6,6 @@
   <li>Python 3,6</li>
   <li>giphy_client</li>
 </ul>
-<p>Credits: https://github.com/londarks/niji-drrrobot</p>
+<p></p>
 
 ![Alt text](https://i.imgur.com/5ngbe5V.png "Porteiro-Bot")
