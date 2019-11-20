@@ -9,50 +9,17 @@ import random
 import threading
 import smtplib
 import os, re
-import time
 from chatterbot.trainers import ListTrainer #Treiner
 from chatterbot import ChatBot #chatbot
 import giphy_client
 from giphy_client.rest import ApiException
 from pprint import pprint
-#import wikipedia
+
 
 
 
 global ts_last_greeting
 ts_last_greeting = 0
-
-
-class Song(object):
-    def __init__(self, keyword):
-        #locale.setlocale(locale.LC_CTYPE, 'chinese')
-        self.keyword = keyword
-        self.url_song = None
-        self.name_song = None
-        self.artist_song = None
-
-    # search in qq music library
-    def qq_search(self):
-        search = requests.get(
-            'http://s.music.qq.com/fcgi-bin/music_search_new_platform?t=0&n=1&aggr=1&cr=1&loginUin=0&format=json&inCharset=utf-8&outCharset=utf-8&notice=0&platform=jqminiframe.json&needNewCode=0&p=1&catZhida=0&remoteplace=sizer.newclient.next_song&w=%s'
-            % requests.utils.quote(
-                self.keyword))
-        resp_search = re.findall('f":"\d+\|.*?\|\d+\|.*?\|', search.text)
-        if resp_search:
-            info_song = resp_search[0]
-            list_name_artist = re.findall('\d\|.*?\|', resp_search[0])
-            self.url_song = 'http://ws.stream.qqmusic.qq.com/%s.m4a?fromtag=46' % re.findall('"\d+', info_song)[0][1:]
-            try:
-                self.name_song = HTMLParser.HTMLParser().unescape(list_name_artist[0][2:-1].replace('&amp;', '&'))
-            except:
-                self.name_song = list_name_artist[0][2:-1]
-            try:
-                self.artist_song = HTMLParser.HTMLParser().unescape(list_name_artist[1][2:-1].replace('&amp;', '&'))
-            except:
-                self.artist_song = list_name_artist[1][2:-1]
-            return True
-        else:
-            return False
 
 class Bot(object):
     def __init__(self, name='Porteiro', icon='zaika'):
@@ -158,17 +125,7 @@ class Bot(object):
                     name_sender = re.findall('"name":".*?"', info_sender)[0][8:-1]
                     message = re.search('"message":".*?"', tu).group(0)[11:-1].encode(encoding='utf-8').decode(
                         encoding='unicode-escape')
-                    #inteligencia artificial
-                    #bot fala respostaditas
-                    #ponto = '.'
-                   # quest = message
-                    #resp = bot.get_response(quest)
-                    #if name_sender == 'Porteiro':
-                    #    pass
-                    #else:
-                    #    self.post(message = '%s%s' % (resp,ponto))
-                    #================================#
-                    print('@%s: %s' % (name_sender,message))#mostra as mensagem do chat enviadas
+                    print('@%s: %s' % (name_sender,message))#
                     #painel do terminal da interface grafica 
                     term_txt=open('terminal.txt','a')
                     term_txt.write('@%s: %s\n'%(name_sender,message))
@@ -205,13 +162,10 @@ class Bot(object):
                                 if name_sender == u'Porteiro':
                                     continue
                                 self.reply_greeting(message)
-#menssagem de boas vindas e de quando sai
             if '"type":"join"' in ru.text:
-                self.post(message='Bem-Vindo!')
+                self.post('Bem-Vindo!')
             ru.close()
-          #  if '"type":"leave"' in ru.text:
-          #      self.post('Volte sempre.!')
-          #  ru.close()
+        
 
 
 
@@ -241,41 +195,11 @@ class Bot(object):
                 list_tips_index = int(1 * random.random())
                 self.post(list_tips[list_tips_index])
 
-#lista aleatoria onde e possivel solta uma menssagem motivacional ramdomicamente
-    #def ground(self):
-     #         list_ground = ['']
-      #        list_ground = random.choice(list_ground)
-       #       self.post('/me %s' % list_ground)
-
-
-    def dicas(self, message, name_sender, to=''):
-        list_dica =[ 'https://i.imgur.com/HWPlDCl.jpg',
-                     'https://i.imgur.com/x6Fn19e.jpg',
-                     'https://i.imgur.com/bElsLgn.jpg',
-                   ]
-        list_dica = random.choice(list_dica)
-        self.post(message='Dica! @%s' % (name_sender), url=list_dica)
-
-
-
-
-
-#sistema de geralmente de gifs
-    #def lista_gifs(self, message, name_sender, to=''):
-     #   list_gifs =['']
-      #  #list_gifs = random.choice(list_gifs) = a lista_gifs vai ser ramdom e buscar algo dentro dela e soltar
-       # list_gifs = random.choice(list_gifs)
-        #time.sleep(1)
-        #self.post(message='Gif! @%s' % (name_sender), url=list_gifs, to=to) # envia o gif
-
-
-
 
 
     def certeza(self, message, name_sender, to=''):
          self.post(message='Créditos', url='https://i.imgur.com/Ybg7jSj.jpg', to=to)
 
-#você pode criar qualquer comando apenas trocando o "help" e subistituindo por qualquer utra variavel do seu desejo e mudando a menssagem
     def help(self, message, name_sender, to=''):
         self.post(message='|/gifs|/time|/dicas|/sms menssagem (privado)|/dados| admin:|/room|/exit|/kick| @%s' % (name_sender))
 
@@ -339,15 +263,6 @@ class Bot(object):
          message = '1° @Annie (5-5-5)'
          self.post(message)
 
-   # def download(self, message, name_sender, to=''):
-    #     self.post(message='oii? quer me baixar? Aqui ==>', url='https://www.youtube.com/watch?v=iO0m_hUJjPQ&t')
-
-
-
-
-
-
-#private mensagem
     def mensagemprivate(self, message, name_sender, to=''):
         if re.findall('/sms .*', message):
            message = message[5:] #conta 5 carateres e depois imprime aquilo escrito
@@ -407,47 +322,7 @@ class Bot(object):
         except ApiException as e:
              self.post(message='sem Resultados %s' %e)
 #========================================construção=====================================#
-    #def ground(self):
-     #         list_ground = ['']
-      #        list_ground = random.choice(list_ground)
-       #       self.post('/me %s' % list_ground)
-
-
-#construção
-#    def russa(self, message, name_sender, to=''):
-#         list_morte = ['Morreu','falho','falho','falho','falho']
-#         self.post(message='Vamos nós matar hehehe')
-#         self.post(message='Go.!')
-#         contador =0
-#         while (contador<6):
-#           time.sleep(3) #delay de 5 segundos
-#           self.post(message='/roll')
-#           list_morte = random.choice(list_morte)
-#           self.post('/me %s' % list_morte)
-#         contador =contador+1
-#         if list_morte == 'Morreu':
-#            self.post(message='Morto')
-
-
-#    def busca(self, message, name_sender, to=''):
-#        if re.findall('/search .*', message):
-#           message = message[8:]
-#           search=wikipedia.search(message)
-#           self.post(message='%s' % (search))
-#============================================================================================#
-#========================================novos_comandos_=====================================#
- #   def kick_user(self):
- #     self.kick_room()
-
-
-
-
-#============================================================================================#
-#========================================coisas_a_fazer=====================================#
-
-
-#============================================================================================#
-#========================================area do bot GuI=====================================#
+    #d
 
     def send_msg(self,message='oiiii'):
         self.post(message) # deixa a sala
@@ -459,22 +334,20 @@ class Bot(object):
 
 #sistema de musica ainda em manutenção
     def music(self, message, name_sender, to=''):
-        if re.findall('/m .*', message):
-            keyword = re.findall('/m .*', message)[0][3:]
-            song = Song(keyword=keyword)
-        for i in range(2):
-            search_resp = song.qq_search()
-            if search_resp:
-                self.share_music(url=song.url_song,
-                                 name='%s - %s by @%s' % (song.name_song, song.artist_song, name_sender))
-                break
-            else:
-                self.post(message='Não consigo encontrar essa música.', to=to)
-        else:
-            self.post(message='Perdeu a capacidade de falar bem? / m + espaço + música', to=to)
+        if re.findall('/m', message):
+            message = message[4:]
+            r_link = message
+            #print(message)
+            link = "https://www.youtube.com/watch?v=%s" % (r_link)
+            url="http://michaelbelgium.me/ytconverter/convert.php?youtubelink=%s " % (link)
+            open_bbc_page = requests.get(url).json() 
+            #print(link)
+            #time.sleep(1)
+            self.share_music(url=open_bbc_page['file'],name=open_bbc_page['title'] )
+
 
     def handle_message(self, message, name_sender):
-        if '/mll' in message:
+        if '/m' in message:
             t_music = threading.Thread(target=self.music, args=(message, name_sender))
             t_music.start()
 
@@ -532,9 +405,7 @@ class Bot(object):
         elif '/groom' in message:
             t_groom = threading.Thread(target=self.groom, args=(message, name_sender))
             t_groom.start()
-        elif '/roleta russa'  in message:
-            t_russa = threading.Thread(target=self.russa, args=(message, name_sender))
-            t_russa.start()
+
 
 
 #mensagens privadas para o bot
