@@ -20,6 +20,7 @@
  
 1. Clone o repositorio
 2. install dependências ``` pip install -r ghipy ```
+3. vá a pasta img do arquivo e renomei o arquivo ```?.png or _.png``` para info.png
 3. Rode o bot com  ``` python or py main.py ```
 
 ## Sobre o Projeto
